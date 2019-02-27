@@ -7,4 +7,5 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home,name='home'),
+    path('team/', views.teamreg,name='teamreg'),
 ]

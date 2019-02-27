@@ -1,7 +1,8 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-from .forms import SignUpForm
+from .forms import SignUpForm,TeamForm
+from django.http import HttpResponse
 
 
 def signup(request):
@@ -22,3 +23,16 @@ def signup(request):
 def home(request):
     return render(request,'home.html')
 
+def teamreg(request):
+    if request.method == "POST":
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            users = request.POST.get('users')
+            return HttpResponse()
+            team = form.save(commit=False)
+            team.created_by = request.user
+            team.save()
+            return redirect('home')
+    else:
+        form = TeamForm()
+    return render(request, 'registration/team.html', {'form': form})

@@ -48,7 +48,7 @@ admin.site.register(Task, TaskAdmin)
 
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'created_by', 'users')
+    list_display = ('id', 'title', 'created_by', 'get_users')
     list_display_links = ('id', 'title')
     search_fields = ('id', 'title', 'created_by',
                      'user__username')
