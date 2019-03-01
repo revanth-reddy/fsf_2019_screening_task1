@@ -93,7 +93,7 @@
 
 
 
-<form action="" method="post" id="team_form" novalidate><input type="hidden" name="csrfmiddlewaretoken" value="ZjaVmb87p7l068Wjb728PDpYN8JQFfTNqa8RVE6WiX28KfLlJw4HKzlcFhztqdSf">
+<form action="" method="post" id="team_form" novalidate>{% csrf_token %}
 <div>
 
 
@@ -131,12 +131,8 @@
                         <label for="id_users">Team_users:</label>
                         
                             <div class="related-widget-wrapper">
-    <select name="users" id="id_users" class="admin-autocomplete" data-ajax--cache="true" data-ajax--type="GET" data-ajax--url="/admin/auth/user/autocomplete/" data-theme="admin-autocomplete" data-allow-clear="true" data-placeholder="" multiple>
+    <select name="users" id="id_users" class="admin-autocomplete" data-ajax--cache="true" data-ajax--type="GET" data-ajax--url="/ajax/users/" data-theme="admin-autocomplete" data-allow-clear="true" data-placeholder="" multiple>
 </select>
-    
-        <a class="related-widget-wrapper-link add-related" id="add_id_users"
-            href="/admin/auth/user/add/?_to_field=id&amp;_popup=1"
-            title="Add another user"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a>
     
 </div>
                         
@@ -205,17 +201,3 @@
 
 </body>
 </html>
-
-
-<!-- {% extends 'base.html' %}
-
-{% block title %}Team Registration{% endblock %}
-
-{% block content %}
-  <h2>Team </h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
-  </form>
-{% endblock %} -->

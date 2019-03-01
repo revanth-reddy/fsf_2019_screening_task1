@@ -2,7 +2,10 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from .forms import SignUpForm,TeamForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
+import simplejson as json
 
 
 def signup(request):
@@ -28,11 +31,23 @@ def teamreg(request):
         form = TeamForm(request.POST)
         if form.is_valid():
             users = request.POST.get('users')
-            return HttpResponse()
+            return HttpResponse(users)
             team = form.save(commit=False)
             team.created_by = request.user
             team.save()
             return redirect('home')
+        else:
+            return HttpResponse('form invalid')
     else:
         form = TeamForm()
     return render(request, 'registration/team.html', {'form': form})
+
+def users_list(request):
+    username = request.GET.get('username', None)
+    all_users = User.objects.all().order_by('id')
+    return JsonResponse({
+            'results': [
+                {'id': str(obj.id), 'text': str(obj.username)}
+                for obj in all_users
+            ],
+        })
