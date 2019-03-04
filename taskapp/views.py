@@ -65,3 +65,10 @@ def teamreg(request):
     else:
         form = TeamForm()
     return render(request, 'registration/team.html', {'form': form})
+
+def teamedit(request,string):
+    try:
+        team = Team.objects.get_object_or_404(title=string)
+    except:
+        return HttpResponse("Team not Found")
+    return HttpResponse(a)
