@@ -5,7 +5,11 @@ from .forms import SignUpForm,TeamForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
+from django.contrib.auth.models import Group, User
 import simplejson as json
+from .models import Team
+from django.contrib.auth.decorators import login_required
+
 
 
 def signup(request):
@@ -26,13 +30,33 @@ def signup(request):
 def home(request):
     return render(request,'home.html')
 
+@login_required
+def users_list(request):
+    username = request.GET.get('username', None)
+    id = request.user.id
+    user = User.objects.filter(id=id)
+    all_users = User.objects.all().order_by('id').exclude(id=id)
+    return JsonResponse({
+            'results': [
+                #{'text': str(obj.username)}
+                {'id': str(obj.id), 'text': str(obj.username)}
+                for obj in all_users
+            ],
+        })
+
+@login_required
 def teamreg(request):
     if request.method == "POST":
         form = TeamForm(request.POST)
         if form.is_valid():
-            users = request.POST.get('users')
-            return HttpResponse(users)
+            users = form.cleaned_data['users']
+            teamtitle = request.POST.get('title')
             team = form.save(commit=False)
+            team = Team.objects.create()
+            team.title = teamtitle
+            for user in users:
+                team.users.add(user)
+            team.users.add(request.user)
             team.created_by = request.user
             team.save()
             return redirect('home')
@@ -41,13 +65,3 @@ def teamreg(request):
     else:
         form = TeamForm()
     return render(request, 'registration/team.html', {'form': form})
-
-def users_list(request):
-    username = request.GET.get('username', None)
-    all_users = User.objects.all().order_by('id')
-    return JsonResponse({
-            'results': [
-                {'id': str(obj.id), 'text': str(obj.username)}
-                for obj in all_users
-            ],
-        })

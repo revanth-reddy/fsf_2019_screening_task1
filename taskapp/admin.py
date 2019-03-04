@@ -47,38 +47,40 @@ class TaskAdmin(admin.ModelAdmin):
 admin.site.register(Task, TaskAdmin)
 
 
-class TeamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'created_by', 'get_users')
-    list_display_links = ('id', 'title')
-    search_fields = ('id', 'title', 'created_by',
-                     'user__username')
+admin.site.register(Team)
 
-    ordering = ('-title',)
-    readonly_fields = ('created_by',)
-    autocomplete_fields = ['users']
+# class TeamAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'title', 'created_by', 'get_users')
+#     list_display_links = ('id', 'title')
+#     search_fields = ('id', 'title', 'created_by',
+#                      'user__username')
 
-    fieldsets = (               # Edition form
-        (None,                   {'fields': ('title', ('users',),)}),
-        (_('More...'), {'fields': ('created_by',), 'classes': ('collapse',)}),
-    )
+#     ordering = ('-title',)
+#     readonly_fields = ('created_by',)
+#     autocomplete_fields = ['users']
 
-    formfield_overrides = {
-        models.TextField: {
-            'widget': Textarea(attrs={'rows': 4, 'cols': 32})
-        }
-    }
+#     fieldsets = (               # Edition form
+#         (None,                   {'fields': ('title', ('users',),)}),
+#         (_('More...'), {'fields': ('created_by',), 'classes': ('collapse',)}),
+#     )
 
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super().get_fieldsets(request, obj)
-        if obj is None:
-            fieldsets = (      # Creation form
-                (None, {'fields': ('title', 'users')}),
-            )
-        return fieldsets
+#     formfield_overrides = {
+#         models.TextField: {
+#             'widget': Textarea(attrs={'rows': 4, 'cols': 32})
+#         }
+#     }
 
-    def save_model(self, request, obj, form, change):
-        if change is False:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
+#     def get_fieldsets(self, request, obj=None):
+#         fieldsets = super().get_fieldsets(request, obj)
+#         if obj is None:
+#             fieldsets = (      # Creation form
+#                 (None, {'fields': ('title', 'users')}),
+#             )
+#         return fieldsets
 
-admin.site.register(Team, TeamAdmin)
+#     def save_model(self, request, obj, form, change):
+#         if change is False:
+#             obj.created_by = request.user
+#         super().save_model(request, obj, form, change)
+
+# admin.site.register(Team, TeamAdmin)

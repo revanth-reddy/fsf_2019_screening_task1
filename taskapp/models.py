@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class Team(models.Model):
     class Meta:
@@ -9,15 +10,10 @@ class Team(models.Model):
     title = models.CharField(_("title"), max_length=200)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='team_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='team_users', verbose_name=_('team_users'),
-                                   null=True, blank=True,)
+    users = models.ManyToManyField(User)
+    
     def __str__(self):
-        return "[%s] %s" % (self.id, self.title)
-    def get_users(self):
-        u = "\n".join([p.username for p in self.users.all()])
-        if "admin" not in u:
-            u = u+"\n"+(str(self.created_by.username))
-        return u
+        return self.title
 
 
 class Task(models.Model):
