@@ -1,12 +1,42 @@
-{% extends 'base.html' %}
-
-{% block title %}Create Task{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+</head>
+<body>
+  
   <h2>Task</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Create</button>
   </form>
-{% endblock %}
+  <br><br><br>
+
+      {% block javascript %}
+        <script type="text/javascript">
+          $(document).ready(function(){
+            $('#id_team').change(function(){
+            var e = document.getElementById("id_team");
+            var team = e.options[e.selectedIndex].value;
+            console.log(team)
+            $.ajax({
+                url: "/ajax/team/users/",
+                data: {
+                  'team': team
+                },
+                dataType: 'json',
+                success: function(data) {
+                  alert(data.result);
+                }});
+
+            });
+          });
+        </script>
+      {% endblock %}
+</body>
+</html>

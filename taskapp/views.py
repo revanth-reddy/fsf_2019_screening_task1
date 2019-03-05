@@ -104,6 +104,16 @@ def teamview(request, string):
     return render(request, 'teamview.html', {'team': team, 'teammates': teammates, 'see': see})
 
 @login_required
+def team_users_list(request):
+    id = request.GET.get('team', None)
+    if id is not None:
+        team = get_object_or_404(Team, id=id)
+        data = {
+            'result': str(team.title)
+        }
+    return JsonResponse(data)
+
+@login_required
 def taskreg(request):
     if request.method == "POST":
         form = TaskForm(request.POST)

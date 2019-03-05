@@ -21,13 +21,13 @@ class TeamForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
     title = forms.CharField(max_length=50)
-    description = forms.CharField(max_length=100, widget=forms.Textarea)
-    status = forms.ChoiceField(choices = STATUSES, label="", initial='', widget=forms.Select(), required=True)
+    description = forms.CharField(label="Description",max_length=100, widget=forms.Textarea)
+    status = forms.ChoiceField(choices = STATUSES, label="Status", initial='', widget=forms.Select(), required=True)
 
     #authors = forms.ModelMultipleChoiceField(queryset=Author.objects.all())
     class Meta:
         model = Task
-        fields = ('title', 'description', 'team', 'status')
+        fields = ('title', 'description', 'team', 'status', 'assignee')
     
     def __init__(self, user, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
