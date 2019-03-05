@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        {% if see == 1 %}
+                {{ team.created_by }}
+        {% endif %}
+        <br><br><br><br><br>
+            <a href="{% url 'teamedit' string=team.title %}">{{ team.title }}</a>
+        <br><br><br><br><br>
+        {% for teammate in teammates %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    {{teammate}}
+                    <br>
+                    <br>
+		{% endfor %}
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignUpForm,TeamForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
@@ -66,9 +66,36 @@ def teamreg(request):
         form = TeamForm()
     return render(request, 'registration/team.html', {'form': form})
 
-def teamedit(request,string):
-    try:
-        team = Team.objects.get_object_or_404(title=string)
-    except:
-        return HttpResponse("Team not Found")
-    return HttpResponse(a)
+def teamedit(request, string):
+    team = get_object_or_404(Team, title=string)
+    if str(request.user) != str(team.created_by):
+        return HttpResponse("You don't have permission to edit")
+    if request.method == "POST":
+        form = TeamForm(request.POST, instance=team)
+        if form.is_valid():
+            users = form.cleaned_data['users']
+            teamtitle = request.POST.get('title')
+            team = form.save(commit=False)
+            team = Team.objects.create()
+            team.title = teamtitle
+            team.users.clear()
+            for user in users:
+                team.users.add(user)
+            team.users.add(request.user)
+            team.save()
+            teammates = [val for val in team.users.all() if val in team.users.all()]
+            return render(request, 'registration/teamview.html', {'team': team, 'teammates': teammates})
+    else:
+        form = TeamForm(instance=team)
+    return render(request, 'registration/teamedit.html', {'form': form})
+
+def teamview(request, string):
+    team = get_object_or_404(Team, title=string)
+    if team is None:
+        return HttpResponse("Team not found")
+    if str(request.user) == str(team.created_by):
+        see = 1
+    else:
+        see = 0
+    teammates = [val for val in team.users.all() if val in team.users.all()]
+    return render(request, 'teamview.html', {'team': team, 'teammates': teammates, 'see': see})
