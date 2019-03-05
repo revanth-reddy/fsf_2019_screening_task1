@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Home</h1>
     {% if user.is_authenticated %}
-        {{user.username}}
+        Hello {{user.username}} !
         <a href="{% url 'logout' %}">
                 <p id="h1"><b>LOGOUT</b></p>
         </a>
@@ -16,10 +16,11 @@
         {% for team in teams_created %}
                     {{ forloop.counter | linebreaksbr}}
 
-                    <a href="{% url 'teamedit' string=team.title %}">{{team}}</a>
+                    <a href="{% url 'teamview' string=team.title %}">{{team}}</a>
                     Team Creator
 
                     <br>
+                    
         {% endfor %}
         
         <br><br><br>

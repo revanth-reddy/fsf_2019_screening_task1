@@ -3,8 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Team,Task
 from django.contrib.auth.models import Group, User
-
-
+from django.utils.translation import ugettext_lazy as _
+from .choices import *
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -18,3 +18,17 @@ class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ('title', 'users',)
+
+class TaskForm(forms.ModelForm):
+    title = forms.CharField(max_length=50)
+    description = forms.CharField(max_length=100, widget=forms.Textarea)
+    status = forms.ChoiceField(choices = STATUSES, label="", initial='', widget=forms.Select(), required=True)
+
+    #authors = forms.ModelMultipleChoiceField(queryset=Author.objects.all())
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'team', 'status')
+    
+    def __init__(self, user, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['team'].queryset = Team.objects.filter(created_by=user)

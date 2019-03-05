@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-        {% if see == 1 %}
+        {% if see == 0 %}
                 Team Creator : {{ team.created_by }}
+        {% else %}
+                You are the team creator
         {% endif %}
         <br><br><br><br><br>
             <a href="{% url 'teamedit' string=team.title %}">{{ team.title }}</a>

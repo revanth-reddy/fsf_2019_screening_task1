@@ -1,7 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import SignUpForm,TeamForm
+from .forms import SignUpForm, TeamForm, TaskForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
@@ -29,7 +29,7 @@ def signup(request):
 
 def home(request):
     if request.user.is_anonymous:
-        return redirect('home')
+        return render(request,'home.html')
     teams = [team for team in Team.objects.all() if request.user in team.users.all()]
     teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
     return render(request,'home.html', {'teams': teams,'teams_created': teams_created})
@@ -102,3 +102,29 @@ def teamview(request, string):
         see = 0
     teammates = [val for val in team.users.all() if val in team.users.all()]
     return render(request, 'teamview.html', {'team': team, 'teammates': teammates, 'see': see})
+
+@login_required
+def taskreg(request):
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            tasktitle = request.POST.get('title')
+            desc = request.POST.get('description')
+            teamtitle = request.POST.get('team')
+            asigne = request.POST.get('assignee')
+            state = request.POST.get('status')
+            task = form.save(commit=False)
+            task = Task.objects.create()
+            task.title = tasktitle
+            task.description = desc
+            task.team = teamtitle
+            task.assignee = asigne
+            task.status = state
+            task.created_by = request.user
+            team.save()
+            return redirect('home')
+        else:
+            return HttpResponse('form invalid')
+    else:
+        form = TaskForm(request.user)
+    return render(request, 'task.html', {'form': form})
