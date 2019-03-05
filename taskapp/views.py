@@ -28,7 +28,11 @@ def signup(request):
 
 
 def home(request):
-    return render(request,'home.html')
+    if request.user.is_anonymous:
+        return redirect('home')
+    teams = [team for team in Team.objects.all() if request.user in team.users.all()]
+    teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
+    return render(request,'home.html', {'teams': teams,'teams_created': teams_created})
 
 @login_required
 def users_list(request):
@@ -75,16 +79,15 @@ def teamedit(request, string):
         if form.is_valid():
             users = form.cleaned_data['users']
             teamtitle = request.POST.get('title')
-            team = form.save(commit=False)
-            team = Team.objects.create()
             team.title = teamtitle
             team.users.clear()
             for user in users:
-                team.users.add(user)
+                if str(user)!=str(request.user):
+                    team.users.add(user)
             team.users.add(request.user)
             team.save()
             teammates = [val for val in team.users.all() if val in team.users.all()]
-            return render(request, 'registration/teamview.html', {'team': team, 'teammates': teammates})
+            return render(request, 'teamview.html', {'team': team, 'teammates': teammates})
     else:
         form = TeamForm(instance=team)
     return render(request, 'registration/teamedit.html', {'form': form})

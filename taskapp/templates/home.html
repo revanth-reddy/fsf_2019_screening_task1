@@ -8,13 +8,41 @@
         {{user.username}}
         <a href="{% url 'logout' %}">
                 <p id="h1"><b>LOGOUT</b></p>
-            </a>
-        {% else %}
+        </a>
+        
+        <br><br><br>
+
+        You are Team Creator of the following Teams : <br>
+        {% for team in teams_created %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    <a href="{% url 'teamedit' string=team.title %}">{{team}}</a>
+                    Team Creator
+
+                    <br>
+        {% endfor %}
+        
+        <br><br><br>
+        
+        You are a member in the following Teams : <br>
+        {% for team in teams %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    {{team}}
+                    Member
+
+                    <br>
+        {% endfor %}
+        
+        <br><br><br>
+
+
+    {% else %}
         <a href="{% url 'login' %}">
                 <p id="h1"><b>SIGN IN</b></p>
             </a>
         <a href="{% url 'signup' %}">
             <p id="h1"><b>SIGN UP</b></p>
-        </a>
+        </a>        
 	{% endif %}
 {% endblock %}
