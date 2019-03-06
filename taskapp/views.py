@@ -9,8 +9,8 @@ from django.contrib.auth.models import Group, User
 import simplejson as json
 from .models import Team, Task
 from django.contrib.auth.decorators import login_required
-
-
+from django import forms
+from django.utils import timezone
 
 def signup(request):
     if request.method == 'POST':
@@ -115,27 +115,42 @@ def team_users_list(request):
     print(json.dumps(data))
     return JsonResponse(data,safe=False)
 
+@login_required
+def teams_list(request):
+    teams = [team for team in Team.objects.all() if request.user in team.users.all()]
+    #teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
+    all_teams = teams
+    data = {
+            str(obj.id) : str(obj.title)
+            for obj in all_teams
+        },
+    print(json.dumps(data))
+    return JsonResponse(data,safe=False)
 
 @login_required
 def taskreg(request):
     if request.method == "POST":
         form = TaskForm(request.POST)
-        if form.is_valid():
+        try:
             tasktitle = request.POST.get('title')
             desc = request.POST.get('description')
-            teamtitle = request.POST.get('team')
+            teamid = request.POST.get('team')
+            team = Team.objects.get(id=teamid)
             asigne = request.POST.get('assignee')
+            assignee = User.objects.get(id=asigne)
             state = request.POST.get('status')
-            task = form.save(commit=False)
-            task = Task.objects.create()
-            task.title = Team.objects.get(title=tasktitle)
-            task.description = desc
-            task.team = teamtitle
-            task.assignee = User.objects.get(id=asigne)
-            task.status = state
-            task.created_by = request.user
-            task.save()
+            # task = form.save(commit=False)
+            # task = Task.objects.create()
+            # task.title = Team.objects.get(title=tasktitle)
+            # task.description = desc
+            created_by = request.user
+            created_at = timezone.now()
+            last_modified = timezone.now()
+            Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
             return redirect('home')
+        except:
+            raise forms.ValidationError("form invalid.")
+            print("hr")
         else:
             return HttpResponse('form invalid')
     else:

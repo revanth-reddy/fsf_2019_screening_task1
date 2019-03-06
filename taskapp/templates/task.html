@@ -19,6 +19,34 @@
   
       {% block javascript %}
         <script type="text/javascript">
+          $( document ).ready(function() {
+              console.log( "ready!" );
+              $.ajax({
+                url: "/ajax/teams/",
+                dataType: 'json',
+                success: function(data) {
+                  var t = data[0]
+                  
+                  console.log(data[0])
+                  for (var key in t) {
+                    if (t.hasOwnProperty(key)) {
+                      var val = t[key];
+                      console.log(key,val);
+                    }
+                  }
+                  //<option value="1">team</option>
+                  var $id_team = $('#id_team');
+                    $id_team.empty();
+                    for (var key in t) {
+                      if (t.hasOwnProperty(key)) {
+                        $id_team.append('<option value=' + key + '>' + t[key] + '</option>');
+                      }
+                    }
+
+                }});
+
+            });
+       
           $(document).ready(function(){
             $('#id_team').change(function(){
             var e = document.getElementById("id_team");
@@ -40,19 +68,15 @@
                       console.log(key,val);
                     }
                   }
-                  // <option value="1">admin</option>
+
                   var $id_assignee = $('#id_assignee');
                     $id_assignee.empty();
-                    for (var i = 0; i < t.length; i++) {
-                        $id_assignee.append('<option value=' + data[i].sysid + ' value=' + data[i].name + '>' + data[i].name + '</option>');
-                    }
                     for (var key in t) {
                       if (t.hasOwnProperty(key)) {
                         $id_assignee.append('<option value=' + key + '>' + t[key] + '</option>');
                       }
                     }
 
-                  // alert(data[0].id);
                 }});
 
             });

@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^team/edit/(?P<string>[\w\-]+)/$', views.teamedit,name='teamedit'),
     url(r'^ajax/users/$', views.users_list, name='users_list'),
     url(r'^ajax/team/users/$', views.team_users_list, name='team_users_list'),
+    url(r'^ajax/teams/$', views.teams_list, name='teams_list'),
     #path('ajax/users/', AutocompleteJsonView.as_view(),),
     url(r'^task/create/$', views.taskreg,name='taskreg'),
 ]
