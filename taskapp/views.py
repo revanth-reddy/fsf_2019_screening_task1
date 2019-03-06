@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.contrib.auth.models import Group, User
 import simplejson as json
-from .models import Team
+from .models import Team, Task
 from django.contrib.auth.decorators import login_required
 
 
@@ -106,12 +106,15 @@ def teamview(request, string):
 @login_required
 def team_users_list(request):
     id = request.GET.get('team', None)
-    if id is not None:
-        team = get_object_or_404(Team, id=id)
-        data = {
-            'result': str(team.title)
-        }
-    return JsonResponse(data)
+    team = get_object_or_404(Team, id=id)
+    all_users = [val for val in team.users.all() if val in team.users.all()]
+    data = {
+            str(obj.id) : str(obj.username)
+            for obj in all_users
+        },
+    print(json.dumps(data))
+    return JsonResponse(data,safe=False)
+
 
 @login_required
 def taskreg(request):
@@ -125,13 +128,13 @@ def taskreg(request):
             state = request.POST.get('status')
             task = form.save(commit=False)
             task = Task.objects.create()
-            task.title = tasktitle
+            task.title = Team.objects.get(title=tasktitle)
             task.description = desc
             task.team = teamtitle
-            task.assignee = asigne
+            task.assignee = User.objects.get(id=asigne)
             task.status = state
             task.created_by = request.user
-            team.save()
+            task.save()
             return redirect('home')
         else:
             return HttpResponse('form invalid')

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Page Title</title>
+  <title>Create Task</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 </head>
@@ -16,7 +16,7 @@
     <button type="submit">Create</button>
   </form>
   <br><br><br>
-
+  
       {% block javascript %}
         <script type="text/javascript">
           $(document).ready(function(){
@@ -31,7 +31,28 @@
                 },
                 dataType: 'json',
                 success: function(data) {
-                  alert(data.result);
+                  var t = data[0]
+                  
+                  console.log(data[0])
+                  for (var key in t) {
+                    if (t.hasOwnProperty(key)) {
+                      var val = t[key];
+                      console.log(key,val);
+                    }
+                  }
+                  // <option value="1">admin</option>
+                  var $id_assignee = $('#id_assignee');
+                    $id_assignee.empty();
+                    for (var i = 0; i < t.length; i++) {
+                        $id_assignee.append('<option value=' + data[i].sysid + ' value=' + data[i].name + '>' + data[i].name + '</option>');
+                    }
+                    for (var key in t) {
+                      if (t.hasOwnProperty(key)) {
+                        $id_assignee.append('<option value=' + key + '>' + t[key] + '</option>');
+                      }
+                    }
+
+                  // alert(data[0].id);
                 }});
 
             });
