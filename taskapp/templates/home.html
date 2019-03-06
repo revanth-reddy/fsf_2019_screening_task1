@@ -58,7 +58,14 @@
         {% endfor %}
         
         Tasks of your Teams : <br>
-        
+        {% for task in my_team_tasks %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
+
+                    <br>
+                    
+        {% endfor %}
 
 
     {% else %}

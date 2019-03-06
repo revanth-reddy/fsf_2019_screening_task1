@@ -44,7 +44,12 @@ def home(request):
     teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
     tasks_created = [task for task in Task.objects.all() if request.user == task.created_by]
     tasks_assigned = [task for task in Task.objects.all() if request.user == task.assignee]
-    return render(request,'home.html', {'teams': teams,'teams_created': teams_created, 'tasks_created': tasks_created,'tasks_assigned': tasks_assigned,})
+    my_team_tasks = []
+    for team in teams:
+        for task in Task.objects.all():
+            if task.team == team:
+                my_team_tasks.append(task)
+    return render(request,'home.html', {'teams': teams,'teams_created': teams_created, 'tasks_created': tasks_created,'tasks_assigned': tasks_assigned,'my_team_tasks': my_team_tasks})
 
 @login_required
 def users_list(request):

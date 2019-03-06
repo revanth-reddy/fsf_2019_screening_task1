@@ -4,7 +4,7 @@
         Task Creator : {{ task.created_by }}<br>
         <h3>Assigned to : {{task.assignee}}</h3>
         <br><br><br><br><br>
-        {% if task.created_by == task.assignee %}
+        {% if task.created_by == request.user %}
             <a href="{% url 'taskedit' string=task.title %}">{{ task.title }}</a>
         {% endif %}
         <br><br><br><br><br>
