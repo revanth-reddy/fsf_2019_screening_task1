@@ -71,12 +71,12 @@
 
                   var $id_assignee = $('#id_assignee');
                     $id_assignee.empty();
+                    $id_assignee.append('<option value="" selected="">---------</option>');
                     for (var key in t) {
                       if (t.hasOwnProperty(key)) {
                         $id_assignee.append('<option value=' + key + '>' + t[key] + '</option>');
                       }
                     }
-
                 }});
 
             });

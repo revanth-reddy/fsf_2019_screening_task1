@@ -30,3 +30,8 @@ class TaskForm(forms.ModelForm):
     
     def __init__(self, user, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
+
+class TaskEditForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ('title','description', 'assignee','status')

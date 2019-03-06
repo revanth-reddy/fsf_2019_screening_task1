@@ -8,12 +8,15 @@ from django.conf import settings
 urlpatterns = [
     path('', views.home,name='home'),
     url(r'^team/create/$', views.teamreg,name='teamreg'),
-    #url(r'^team/(?P<string>[\w\-]+)/$', views.teamedit,name='teamedit'),
     url(r'^team/view/(?P<string>[\w\-]+)/$', views.teamview,name='teamview'),
     url(r'^team/edit/(?P<string>[\w\-]+)/$', views.teamedit,name='teamedit'),
+    
+    url(r'^task/create/$', views.taskreg,name='taskreg'),
+    url(r'^task/view/(?P<string>[\w\-]+)/$', views.taskview,name='taskview'),
+    url(r'^task/edit/(?P<string>[\w\-]+)/$', views.taskedit,name='taskedit'),
+
     url(r'^ajax/users/$', views.users_list, name='users_list'),
     url(r'^ajax/team/users/$', views.team_users_list, name='team_users_list'),
     url(r'^ajax/teams/$', views.teams_list, name='teams_list'),
-    #path('ajax/users/', AutocompleteJsonView.as_view(),),
-    url(r'^task/create/$', views.taskreg,name='taskreg'),
+    
 ]

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        Task Creator : {{ task.created_by }}<br>
+        <h3>Assigned to : {{task.assignee}}</h3>
+        <br><br><br><br><br>
+        {% if task.created_by == task.assignee %}
+            <a href="{% url 'taskedit' string=task.title %}">{{ task.title }}</a>
+        {% endif %}
+        <br><br><br><br><br>
+    <h4>Task Title : {{task.title}}</h4><br><br>
+    <h4> Present Status : {{task.status}}</h4><br><br>
+    <h4> Created at : {{task.created_at}}</h4><br><br>
+    <h4> Last Updated at : {{task.last_modified}}</h4><br><br>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import SignUpForm, TeamForm, TaskForm
+from .forms import SignUpForm, TeamForm, TaskForm, TaskEditForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
@@ -26,13 +26,25 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+"""
+
+Home View where the current user can get all the information like
+-> In which teams he is a member
+-> Teams created by him
+-> Tasks created by him
+-> Tasks assigned to him
+-> Tasks of his team
+
+"""
 
 def home(request):
     if request.user.is_anonymous:
         return render(request,'home.html')
     teams = [team for team in Team.objects.all() if request.user in team.users.all()]
     teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
-    return render(request,'home.html', {'teams': teams,'teams_created': teams_created})
+    tasks_created = [task for task in Task.objects.all() if request.user == task.created_by]
+    tasks_assigned = [task for task in Task.objects.all() if request.user == task.assignee]
+    return render(request,'home.html', {'teams': teams,'teams_created': teams_created, 'tasks_created': tasks_created,'tasks_assigned': tasks_assigned,})
 
 @login_required
 def users_list(request):
@@ -70,6 +82,10 @@ def teamreg(request):
         form = TeamForm()
     return render(request, 'registration/team.html', {'form': form})
 
+"""
+View to edit team and render the updated team
+"""
+
 def teamedit(request, string):
     team = get_object_or_404(Team, title=string)
     if str(request.user) != str(team.created_by):
@@ -91,6 +107,10 @@ def teamedit(request, string):
     else:
         form = TeamForm(instance=team)
     return render(request, 'registration/teamedit.html', {'form': form})
+
+'''
+Get the team and check if request.user is team creator or not by using see variable.
+'''
 
 def teamview(request, string):
     team = get_object_or_404(Team, title=string)
@@ -115,10 +135,10 @@ def team_users_list(request):
     print(json.dumps(data))
     return JsonResponse(data,safe=False)
 
+# teams list as ajax to fetch teams list where the user is member # team creator is also a member
 @login_required
 def teams_list(request):
     teams = [team for team in Team.objects.all() if request.user in team.users.all()]
-    #teams_created = [team for team in Team.objects.all() if request.user == team.created_by]
     all_teams = teams
     data = {
             str(obj.id) : str(obj.title)
@@ -137,22 +157,74 @@ def taskreg(request):
             teamid = request.POST.get('team')
             team = Team.objects.get(id=teamid)
             asigne = request.POST.get('assignee')
-            assignee = User.objects.get(id=asigne)
+            # assignee = User.objects.get(id=asigne)
             state = request.POST.get('status')
-            # task = form.save(commit=False)
-            # task = Task.objects.create()
-            # task.title = Team.objects.get(title=tasktitle)
-            # task.description = desc
             created_by = request.user
             created_at = timezone.now()
             last_modified = timezone.now()
-            Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
-            return redirect('home')
+            
+            if asigne=="":
+                Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,status=state,created_at=created_at,last_modified=last_modified)
+                task = get_object_or_404(Task, title=tasktitle)
+                return render(request, 'taskview.html', {'task': task,})
+            else:
+                # task = get_object_or_404(Task, title=tasktitle)
+                # task.assignee = User.objects.get(id=asigne)
+                # task.save()
+                assignee = User.objects.get(id=asigne)
+                Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
+                task = get_object_or_404(Task, title=tasktitle)
+                return render(request, 'taskview.html', {'task': task,})
         except:
-            raise forms.ValidationError("form invalid.")
-            print("hr")
+            return HttpResponse('form invalid1')
         else:
-            return HttpResponse('form invalid')
+            return HttpResponse('form invalid2')
     else:
         form = TaskForm(request.user)
     return render(request, 'task.html', {'form': form})
+
+
+
+"""
+View to edit task and render the updated task
+"""
+@login_required
+def taskedit(request, string):
+    task = get_object_or_404(Task, title=string)
+    if str(request.user) != str(task.created_by):
+        return HttpResponse("You don't have permission to edit")
+    if request.method == "POST":
+        form = TaskEditForm(request.POST, instance=task)
+        if form.is_valid():
+            tasktitle = request.POST.get('title')
+            taskdesc = request.POST.get('description')
+            task.title = tasktitle
+            task.description = taskdesc
+            asigne = request.POST.get('assignee')
+            if asigne!="":
+                task.assignee = User.objects.get(id=asigne)
+            state = request.POST.get('status')
+            task.status = state
+            task.last_modified = timezone.now()
+            task.save()
+            return render(request, 'taskview.html', {'task': task,})
+    else:
+        form = TaskEditForm(instance=task)
+        team = get_object_or_404(Team, id=task.team.id)
+        users = [val for val in team.users.all() if val in team.users.all()]
+    return render(request, 'taskedit.html', {'form': form, 'task': task, 'users': users})
+
+
+
+def taskview(request, string):
+    task = get_object_or_404(Task, title=string)
+    if task is None:
+        return HttpResponse("Task not found")
+    team = get_object_or_404(Team, id=task.team.id)
+    users = [val for val in team.users.all() if val in team.users.all()]
+    if request.user in users:
+        # give permission to see
+        return render(request, 'taskview.html', {'task': task,})
+    else:
+        #see = 0 # sorry no permission
+        return HttpResponse("You don't have permission to see the task")

@@ -37,6 +37,29 @@
         
         <br><br><br>
 
+        Tasks created by you : <br>
+        {% for task in tasks_created %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    <a href="{% url 'taskedit' string=task.title %}">{{task}}</a>
+
+                    <br>
+                    
+        {% endfor %}
+        
+        Tasks assigned to you :<Br>
+        {% for task in tasks_assigned %}
+                    {{ forloop.counter | linebreaksbr}}
+
+                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
+
+                    <br>
+                    
+        {% endfor %}
+        
+        Tasks of your Teams : <br>
+        
+
 
     {% else %}
         <a href="{% url 'login' %}">
