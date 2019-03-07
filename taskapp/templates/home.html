@@ -41,7 +41,7 @@
         {% for task in tasks_created %}
                     {{ forloop.counter | linebreaksbr}}
 
-                    <a href="{% url 'taskedit' string=task.title %}">{{task}}</a>
+                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
 
                     <br>
                     

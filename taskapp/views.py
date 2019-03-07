@@ -1,13 +1,13 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import SignUpForm, TeamForm, TaskForm, TaskEditForm
+from .forms import SignUpForm, TeamForm, TaskForm, TaskEditForm, CommentForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.contrib.auth.models import Group, User
 import simplejson as json
-from .models import Team, Task
+from .models import Team, Task, Comments
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.utils import timezone
@@ -239,8 +239,46 @@ def taskview(request, string):
     team = get_object_or_404(Team, id=task.team.id)
     users = [val for val in team.users.all() if val in team.users.all()]
     if request.user in users:
-        # give permission to see
-        return render(request, 'taskview.html', {'task': task,})
+        # has permission to see
+        if request.method == "POST":
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                task = get_object_or_404(Task, title=string)
+                comment = request.POST.get('comment')
+                created_by = request.user
+                created_at = timezone.now()
+                Comments.objects.create(task=task,author=created_by,comment=comment,created_date=created_at)
+                task = get_object_or_404(Task, title=string)
+            else:
+                return HttpResponse('comment invalid')
+        c = Comments.objects.all().filter(task=task)
+        comments = [comment for comment in c]
+        form = CommentForm()
+        return render(request, 'taskview.html', {'form': form,'task': task,'comments': comments})
     else:
-        #see = 0 # sorry no permission
+        # sorry no permission
         return HttpResponse("You don't have permission to see the task")
+
+
+"""
+view to Create Comment for a specific task created in a same group
+"""
+
+def commentreg(request,string):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            task = get_object_or_404(Task, title=string)
+            comment = request.POST.get('comment')
+            created_by = request.user
+            created_at = timezone.now()
+            Comments.objects.create(task=task,author=created_by,comment=comment,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
+            task = get_object_or_404(Task, title=string)
+            return taskview(request, string)
+        else:
+            return HttpResponse('comment invalid')
+    else:
+        form = CommentForm()
+    return taskview(request, string)
+
+

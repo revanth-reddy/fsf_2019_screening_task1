@@ -3,13 +3,33 @@
 {% block content %}
         Task Creator : {{ task.created_by }}<br>
         <h3>Assigned to : {{task.assignee}}</h3>
-        <br><br><br><br><br>
+
         {% if task.created_by == request.user %}
             <a href="{% url 'taskedit' string=task.title %}">{{ task.title }}</a>
         {% endif %}
-        <br><br><br><br><br>
-    <h4>Task Title : {{task.title}}</h4><br><br>
-    <h4> Present Status : {{task.status}}</h4><br><br>
-    <h4> Created at : {{task.created_at}}</h4><br><br>
-    <h4> Last Updated at : {{task.last_modified}}</h4><br><br>
+
+    <h4>Task Title : {{task.title}}</h4>
+    <h4> Present Status : {{task.status}}</h4>
+    <h4> Created at : {{task.created_at}}</h4>
+    <h4> Last Updated at : {{task.last_modified}}</h4>
+
+
+    <h1>Comments : </h1>
+    {% for comment in comments %}
+                <div style="border-style: dashed">
+                    <h5>{{comment.author}} commented on {{comment.created_date}}</h5>
+                    <h3>Comment : {{comment}}</h3>
+                    
+                </div>
+                <br>
+    {% endfor %}
+
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+
+
 {% endblock %}
