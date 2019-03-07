@@ -65,6 +65,10 @@ def users_list(request):
             ],
         })
 
+"""
+Team registration ## only authenticated users can do it
+"""
+
 @login_required
 def teamreg(request):
     if request.method == "POST":
