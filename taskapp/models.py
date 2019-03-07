@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 class Team(models.Model):
     class Meta:
@@ -30,7 +32,7 @@ class Task(models.Model):
 
     title = models.CharField(_("title"), max_length=50)
     description = models.TextField(max_length=1000)
-    team = models.ForeignKey(Team,on_delete=models.PROTECT)
+    team = models.ForeignKey(Team,on_delete=models.PROTECT, null =True, blank = True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_creator', verbose_name=_('task_creator'),
                                    on_delete=models.PROTECT, null=False)
     assignee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_assigne', verbose_name=_('task_assigne'),
@@ -41,3 +43,15 @@ class Task(models.Model):
     
     def __str__(self):
         return self.title
+
+class Comments(models.Model):
+    class Meta:
+        verbose_name = _("Comment")
+        verbose_name_plural = _("Comments")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comment_creator', verbose_name=_('comment_creator'),
+                                   on_delete=models.PROTECT, null=False)
+    comment = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return self.comment

@@ -160,7 +160,6 @@ def taskreg(request):
             tasktitle = request.POST.get('title')
             desc = request.POST.get('description')
             teamid = request.POST.get('team')
-            team = Team.objects.get(id=teamid)
             asigne = request.POST.get('assignee')
             # assignee = User.objects.get(id=asigne)
             state = request.POST.get('status')
@@ -168,6 +167,16 @@ def taskreg(request):
             created_at = timezone.now()
             last_modified = timezone.now()
             
+            # if team is empty then assignee has to be the request.user always
+            if teamid=="":
+                assignee = request.user
+                Task.objects.create(title=tasktitle,description=desc,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
+                task = get_object_or_404(Task, title=tasktitle)
+                return render(request, 'taskview.html', {'task': task,})
+            else:
+                team = Team.objects.get(id=teamid)
+
+            # assignee is empty only in case of a team
             if asigne=="":
                 Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,status=state,created_at=created_at,last_modified=last_modified)
                 task = get_object_or_404(Task, title=tasktitle)
@@ -220,7 +229,9 @@ def taskedit(request, string):
     return render(request, 'taskedit.html', {'form': form, 'task': task, 'users': users})
 
 
-
+"""
+View which allows specific users to view the task 
+"""
 def taskview(request, string):
     task = get_object_or_404(Task, title=string)
     if task is None:
