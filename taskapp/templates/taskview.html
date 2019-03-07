@@ -19,7 +19,9 @@
                 <div style="border-style: dashed">
                     <h5>{{comment.author}} commented on {{comment.created_date}}</h5>
                     <h3>Comment : {{comment}}</h3>
-                    
+                    {% if comment.author == request.user %}
+                        <p><a href="{% url 'commentedit' id=comment.id %}">Edit?</a></p>
+                    {% endif %}
                 </div>
                 <br>
     {% endfor %}

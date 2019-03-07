@@ -14,8 +14,10 @@ urlpatterns = [
     url(r'^task/create/$', views.taskreg,name='taskreg'),
     url(r'^task/view/(?P<string>[\w\-]+)/$', views.taskview,name='taskview'),
     url(r'^task/edit/(?P<string>[\w\-]+)/$', views.taskedit,name='taskedit'),
-    url(r'^task/delete/(?P<string>[\w\-]+)/$', views.taskdelete,name='taskdelete'),
+    url(r'^task/delete/(?P<string>[\d+]+)/$', views.taskdelete,name='taskdelete'),
 
+    url(r'^comment/edit/(?P<id>[\w\-]+)/$', views.commentedit,name='commentedit'),
+    url(r'^comment/delete/(?P<id>[\w\-]+)/$', views.commentdel,name='commentdel'),
     url(r'^ajax/users/$', views.users_list, name='users_list'),
     url(r'^ajax/team/users/$', views.team_users_list, name='team_users_list'),
     url(r'^ajax/teams/$', views.teams_list, name='teams_list'),

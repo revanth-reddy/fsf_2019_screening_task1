@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content%}
+<h3>Commented under task "{{comment.task}}" on "{{comment.created_date}}"</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update Comment</button>
+</form>
+{% if comment.author == request.user %}
+                        <p><a href="{% url 'commentdel' id=comment.id %}">Delete ?</a></p>
+                    {% endif %}
+{% endblock %}
