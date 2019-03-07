@@ -128,6 +128,7 @@ def teamview(request, string):
     teammates = [val for val in team.users.all() if val in team.users.all()]
     return render(request, 'teamview.html', {'team': team, 'teammates': teammates, 'see': see})
 
+# ajax to fetch users list of a team in task creation page  
 @login_required
 def team_users_list(request):
     id = request.GET.get('team', None)
@@ -258,6 +259,27 @@ def taskview(request, string):
     else:
         # sorry no permission
         return HttpResponse("You don't have permission to see the task")
+
+
+"""
+View to delete Task along with its comments
+"""
+def taskdelete(request, string):
+    task = get_object_or_404(Task, title=string)
+    if task is None:
+        return HttpResponse("Task not found")
+    if request.user == task.created_by:
+        # has permission to delete task
+        comments = Comments.objects.all().filter(task=task)
+        if comments is not None: # if comments exists then delete
+            for comment in comments:
+                comment.delete()
+        task.delete()
+        return redirect('home')
+    else:
+        # sorry no permission
+        return HttpResponse("You don't have permission to delete the task")
+
 
 
 """

@@ -1,8 +1,14 @@
-{% extends 'base.html' %}
-
-{% block title %}Home{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+</head>
+<body>
     <h1>Home</h1>
     {% if user.is_authenticated %}
         Hello {{user.username}} !
@@ -46,7 +52,7 @@
                     <br>
                     
         {% endfor %}
-        
+        <br>
         Tasks assigned to you :<Br>
         {% for task in tasks_assigned %}
                     {{ forloop.counter | linebreaksbr}}
@@ -56,7 +62,7 @@
                     <br>
                     
         {% endfor %}
-        
+        <br>
         Tasks of your Teams : <br>
         {% for task in my_team_tasks %}
                     {{ forloop.counter | linebreaksbr}}
@@ -76,4 +82,5 @@
             <p id="h1"><b>SIGN UP</b></p>
         </a>        
 	{% endif %}
-{% endblock %}
+</body>
+</html>

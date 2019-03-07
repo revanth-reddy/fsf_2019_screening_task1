@@ -4,7 +4,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Task : {{task.title}}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="main.js"></script>
     </head>
     <body >
         <h1>Team : {{task.team}}</h1>
@@ -35,7 +34,7 @@
             <button type="submit">Update</button>
             <a href="{% url 'home' %}">Cancel</a>
         </form>
-    
+        <a href="{% url 'taskdelete' string=task.title %}">Delete Task ?</a>
     </body><span class="gr__tooltip"><span class="gr__tooltip-content"></span><i class="gr__tooltip-logo"></i><span class="gr__triangle"></span></span></html>
 
 <!-- <!DOCTYPE html>
