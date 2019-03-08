@@ -5,82 +5,94 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Task Manager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
-    <h1>Home</h1>
+    
     {% if user.is_authenticated %}
-        Hello {{user.username}} !
-        <a href="{% url 'logout' %}">
-                <p id="h1"><b>LOGOUT</b></p>
-        </a>
+    
+    <div class="jumbotron text-center">
+        <h1>Home</h1>
+        <h3>Hello {{user.username}} 👋</h3>
+        <a href="{% url 'logout' %}">LOGOUT</a>
+    </div>
+    
+    <div class="container" style="background-color:aliceblue; text-align: center;">
+        <div class="row">
+            <div class = "col-md-6">
+                <h2><a href="{% url 'teamreg' %}">+ Create Team</a></h2>
+            </div>
+            <div class = "col-md-6">
+                <h2><a href="{% url 'taskreg' %}">+ Create Task</a></h2>
+            </div>
+        </div>
+    </div>
         
-        <br><br><br>
+    <div class="container">
+        <div class="row">
 
-        You are Team Creator of the following Teams : <br>
-        {% for team in teams_created %}
-                    {{ forloop.counter | linebreaksbr}}
+            <div class="col-sm-6">
+                <h3>Teams created by you : </h3>
+                {% for team in teams_created %}
 
-                    <a href="{% url 'teamview' string=team.title %}">{{team}}</a>
-                    Team Creator
+                <h4>{{ forloop.counter | linebreaksbr}}  <a href="{% url 'teamview' string=team.title %}">{{team}}</a> ( Team Creator )</h4>
+                            
+                {% endfor %}
+            </div>
+            
+            <div class="col-sm-6">
+            <h3>Teams you are part of : </h3>
+                {% for team in teams %}
+                            
 
-                    <br>
-                    
-        {% endfor %}
+                <h4>{{ forloop.counter | linebreaksbr}} {{team}} ( Member )</h4>
+                
+                {% endfor %}
+            </div>
+
+        </div>
         
-        <br><br><br>
-        
-        You are a member in the following Teams : <br>
-        {% for team in teams %}
-                    {{ forloop.counter | linebreaksbr}}
-
-                    {{team}}
-                    Member
-
-                    <br>
-        {% endfor %}
-        
-        <br><br><br>
-
-        Tasks created by you : <br>
-        {% for task in tasks_created %}
-                    {{ forloop.counter | linebreaksbr}}
-
-                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
-
-                    <br>
-                    
-        {% endfor %}
         <br>
-        Tasks assigned to you :<Br>
-        {% for task in tasks_assigned %}
-                    {{ forloop.counter | linebreaksbr}}
 
-                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
+        <div class="row">
 
-                    <br>
-                    
-        {% endfor %}
-        <br>
-        Tasks of your Teams : <br>
-        {% for task in my_team_tasks %}
-                    {{ forloop.counter | linebreaksbr}}
+            <div class="col-sm-4">
+                <h3>Tasks created by you : </h3>
+                {% for task in tasks_created %}
+                    <h4>{{ forloop.counter | linebreaksbr}} <a href="{% url 'taskview' string=task.title %}">{{task}}</a></h4>         
+                {% endfor %}
+            </div>
+            <div class="col-sm-4">
+                <h3>Tasks assigned to you :</h3>
+                {% for task in tasks_assigned %}
+                    <h4>{{ forloop.counter | linebreaksbr}} <a href="{% url 'taskview' string=task.title %}">{{task}}</a></h4>           
+                {% endfor %}
+            </div>
+            <div class="col-sm-4">
+                <h3>Tasks of your Teams :</h3>
+                {% for task in my_team_tasks %}
+                    <h4>{{ forloop.counter | linebreaksbr}} <a href="{% url 'taskview' string=task.title %}">{{task}}</a></h4>
+                {% endfor %}
+            </div>
 
-                    <a href="{% url 'taskview' string=task.title %}">{{task}}</a>
-
-                    <br>
-                    
-        {% endfor %}
-
-
+        </div>
+        <div class="footer">
+            <h5>Ps: All the colored teams & tasks are links</h5>
+        </div>
+    </div>
     {% else %}
-        <a href="{% url 'login' %}">
-                <p id="h1"><b>SIGN IN</b></p>
-            </a>
-        <a href="{% url 'signup' %}">
-            <p id="h1"><b>SIGN UP</b></p>
-        </a>        
+    <div>
+        <h1>Home</h1>
+        <h4><a href="{% url 'login' %}">SIGN IN</a> | <a href="{% url 'signup' %}">SIGN UP</a></h4>
+    </div>
 	{% endif %}
 </body>
 </html>
