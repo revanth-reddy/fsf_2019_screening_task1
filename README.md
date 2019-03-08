@@ -48,5 +48,6 @@ No third party apps used 😉
 ```
 
 ##  Additional Features are also added :
+- Edit and Update a Team
 - Edit Delete and Update a Task
 - Edit Delete and Update a Comment

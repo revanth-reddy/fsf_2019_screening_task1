@@ -20,7 +20,7 @@
     {% if user.is_authenticated %}
     
     <div class="jumbotron text-center">
-        <h1>Home</h1>
+        <h1>Task Manager</h1>
         <h3>Hello {{user.username}} 👋</h3>
         <a href="{% url 'logout' %}">LOGOUT</a>
     </div>
@@ -89,10 +89,24 @@
         </div>
     </div>
     {% else %}
-    <div>
-        <h1>Home</h1>
-        <h4><a href="{% url 'login' %}">SIGN IN</a> | <a href="{% url 'signup' %}">SIGN UP</a></h4>
-    </div>
+    
+        <div class="jumbotron text-center">
+                <h1>Task Manager</h1>
+                <h3>Welcome 👋</h3>
+                <p>Please signin or signup to continue</p>
+        </div>
+        <br><br>
+        <div class="container" style="background-color:aliceblue;">
+            <div class="row">
+                <div class = "col-md-6" style=" text-align: left;">
+                    <a href="{% url 'login' %}"><h2>SIGN IN</h2></a>
+                </div>
+                <div class = "col-md-6" style=" text-align: right;">
+                    <a href="{% url 'signup' %}"><h2>SIGN UP</h2></a>
+                </div>
+            </div>
+        </div>
+
 	{% endif %}
 </body>
 </html>
