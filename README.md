@@ -42,6 +42,7 @@ There's already a database included in the repo ( db.sqlite3 ). So, there's no n
 - Python 3.6.7
 - [Django](https://www.djangoproject.com/)  - The web framework used
 - HTML, CSS, Js, jQuery
+- [Bootstrap 4](https://getbootstrap.com/)  - Responsiveness reloaded
 - Ajax
 ```
 No third party apps used 😉
