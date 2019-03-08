@@ -10,14 +10,14 @@ urlpatterns = [
 
     # Team urls
     url(r'^team/create/$', views.teamreg,name='teamreg'),
-    url(r'^team/view/(?P<string>[\w\-]+)/$', views.teamview,name='teamview'),
-    url(r'^team/edit/(?P<string>[\w\-]+)/$', views.teamedit,name='teamedit'),
+    url(r'^team/view/(?P<string>.+)/$', views.teamview,name='teamview'),
+    url(r'^team/edit/(?P<string>.+)/$', views.teamedit,name='teamedit'),
     
     # Task urls
     url(r'^task/create/$', views.taskreg,name='taskreg'),
-    url(r'^task/view/(?P<string>[\w\-]+)/$', views.taskview,name='taskview'),
-    url(r'^task/edit/(?P<string>[\w\-]+)/$', views.taskedit,name='taskedit'),
-    url(r'^task/delete/(?P<string>[\d+]+)/$', views.taskdelete,name='taskdelete'),
+    url(r'^task/view/(?P<string>.+)/$', views.taskview,name='taskview'),
+    url(r'^task/edit/(?P<string>.+)/$', views.taskedit,name='taskedit'),
+    url(r'^task/delete/(?P<string>.+)/$', views.taskdelete,name='taskdelete'),
     
     # Comments urls
     url(r'^comment/edit/(?P<id>[\w\-]+)/$', views.commentedit,name='commentedit'),

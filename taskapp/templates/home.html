@@ -53,7 +53,7 @@
                 {% for team in teams %}
                             
 
-                <h4>{{ forloop.counter | linebreaksbr}} {{team}} ( Member )</h4>
+                <h4>{{ forloop.counter | linebreaksbr}}   <a href="{% url 'teamview' string=team.title %}"> {{team}}</a> ( Member )</h4>
                 
                 {% endfor %}
             </div>

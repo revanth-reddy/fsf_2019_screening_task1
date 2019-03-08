@@ -111,8 +111,7 @@ def teamedit(request, string):
                     team.users.add(user)
             team.users.add(request.user)
             team.save()
-            teammates = [val for val in team.users.all() if val in team.users.all()]
-            return render(request, 'teamview.html', {'team': team, 'teammates': teammates})
+            return redirect('teamview', string=team.title)
     else:
         form = TeamForm(instance=team)
     return render(request, 'registration/teamedit.html', {'form': form})
@@ -177,7 +176,7 @@ def taskreg(request):
                 assignee = request.user
                 Task.objects.create(title=tasktitle,description=desc,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
                 task = get_object_or_404(Task, title=tasktitle)
-                return render(request, 'taskview.html', {'task': task,})
+                return redirect('taskview', string=task.title)
             else:
                 team = Team.objects.get(id=teamid)
 
@@ -185,15 +184,12 @@ def taskreg(request):
             if asigne=="":
                 Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,status=state,created_at=created_at,last_modified=last_modified)
                 task = get_object_or_404(Task, title=tasktitle)
-                return render(request, 'taskview.html', {'task': task,})
+                return redirect('taskview', string=task.title)
             else:
-                # task = get_object_or_404(Task, title=tasktitle)
-                # task.assignee = User.objects.get(id=asigne)
-                # task.save()
                 assignee = User.objects.get(id=asigne)
                 Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
                 task = get_object_or_404(Task, title=tasktitle)
-                return render(request, 'taskview.html', {'task': task,})
+                return redirect('taskview', string=task.title)
         except:
             return HttpResponse('form invalid1')
         else:
@@ -210,6 +206,7 @@ View to edit task and render the updated task
 @login_required
 def taskedit(request, string):
     task = get_object_or_404(Task, title=string)
+    taskprev = task
     if str(request.user) != str(task.created_by):
         return HttpResponse("You don't have permission to edit")
     if request.method == "POST":
@@ -226,7 +223,12 @@ def taskedit(request, string):
             task.status = state
             task.last_modified = timezone.now()
             task.save()
-            return render(request, 'taskview.html', {'task': task,})
+            comm = Comments.objects.filter(task = taskprev)
+            # changing comments related to task when task is changed
+            for com in comm:
+                com.task = task
+                com.save()
+            return redirect('taskview', string=task.title)
     else:
         form = TaskEditForm(instance=task)
         team = get_object_or_404(Team, id=task.team.id)
