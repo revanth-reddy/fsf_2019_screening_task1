@@ -1,39 +1,69 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Task : {{task.title}}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body >
-        <h1>Team : {{task.team}}</h1>
-        <h3>Assigned to  : {{task.assignee}}</h3>
-        <form method="post">
-            {% csrf_token %}
-            <p><label for="id_title">Title:</label> <input type="text" name="title" value="{{task.title}}" maxlength="50" required="" id="id_title"></p>
-    <p><label for="id_description">Description:</label> <textarea name="description" cols="40" rows="10" maxlength="1000" required="" id="id_description">{{task.description}}</textarea></p>
-    <p><label for="id_assignee">Task_assigne:</label> <select name="assignee" id="id_assignee">
-      <option value="">---------</option>
-      {% for a in users  %}
-        <option value="{{a.id}}">{{a.username}}</option>
-      {% endfor %}
-    
-    </select></p>
-    <p><label for="id_status">Status:</label> <select name="status" id="id_status">
-      <option value="to-do" selected="">To Do</option>
-    
-      <option value="planned">Planned</option>
-    
-      <option value="in_progress">In Progress</option>
-    
-      <option value="done">Done</option>
-    
-      <option value="dismissed">Dismissed</option>
-    
-    </select></p>
-            <button type="submit">Update</button>
-            <a href="{% url 'home' %}">Cancel</a>
-        </form>
-        <a href="{% url 'taskdelete' string=task.title %}">Delete Task ?</a>
-    </body>
-    </html>
+{% extends 'base.html' %}
+
+{% block title %}Edit Team{% endblock %}
+
+{% block content %}
+<br><br>
+    <div class="container" style="background-color:aliceblue;">
+        <div class="row">
+            <div class = "col-md-3" style=" text-align: left;">
+                <a href="{% url 'home' %}"><h2>🏠Home</h2></a>
+            </div>
+            <div class = "col-md-3" style=" text-align: left;">
+                <h3>Status : {{task.status}}</h3>
+            </div>
+            <div class = "col-md-3" style=" text-align: right;">
+                <h3>Assignee : {{task.assignee}}</h3>
+            </div>
+            <div class = "col-md-3" style=" text-align: right;">
+                <h3>Team : {{task.team}}</h3>
+            </div>
+        </div>
+    </div> 
+<br><br>
+<div class="container">
+  <form method="post">
+      {% csrf_token %}
+
+  <div class="form-group">
+    <label for="id_title">Title :</label>
+    <input type="text" class="form-control" name="title" value="{{task.title}}" maxlength="50" required="" id="id_title" aria-describedby="titleHelp" placeholder="Enter Task Title">
+    <small id="titleHelp" class="form-text text-muted">Please enter the appropriate title for task.</small>
+  </div>
+  <div class="form-group">
+      <label for="id_description">Description:</label> 
+      <textarea class="form-control" name="description" rows="5" maxlength="1000" required="" id="id_description" aria-describedby="descHelp" placeholder="Enter Task Description">{{task.description}}</textarea>
+      <small id="descHelp" class="form-text text-muted">Please enter the brief description for task.</small>
+  </div>
+
+  <div class="form-group">
+      <label for="id_status">Status :</label>
+      <select class="form-control" required="" name="status" id="id_status" aria-describedby="statusHelp">
+        	<option value="to-do">To Do</option>
+            <option value="planned">Planned</option>
+            <option value="in_progress">In Progress</option>
+            <option value="done">Done</option>
+            <option value="dismissed">Dismissed</option>
+      </select>
+      <small id="statusHelp" class="form-text text-muted">Please select the present status of Task.</small>
+  </div>
+
+  <div class="form-group">
+      <label for="id_assignee">Task Assigne :</label>
+      <select class="form-control" name="assignee" id="id_assignee" aria-describedby="assignHelp">
+        <option value="" selected="">---------</option>
+        {% for a in users  %}
+          <option value="{{a.id}}">{{a.username}}</option>
+        {% endfor %}
+      </select>
+      <small id="assignHelp" class="form-text text-muted">Please select assignee, if you are not in any team you will be automatically assigned.</small>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update</button>
+  <a href="{% url 'home' %}" class="btn btn-primary" role="button" aria-pressed="true">Cancel</a>
+  <a href="{% url 'taskdelete' string=task.title %}" class="btn btn-primary" role="button" aria-pressed="true">Delete Task ?</a>
+            
+</form>
+<br><br><br>
+</div>
+{% endblock %}

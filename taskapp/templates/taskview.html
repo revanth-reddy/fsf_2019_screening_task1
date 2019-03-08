@@ -55,11 +55,11 @@
                 <div class="col-sm-12" style="text-align: left;">
                     <h3>{{comment}}</h3>
                 </div>
-                <div class="col-sm-12" style="text-align: left;">
-                    {% if comment.author == request.user %}
-                        <p><a href="{% url 'commentedit' id=comment.id %}">Edit?</a></p>
-                    {% endif %}
-                </div>
+                {% if comment.author == request.user %}
+                    <div class="col-sm-12" style="text-align: left;padding-bottom: 5px;">
+                        <a href="{% url 'commentedit' id=comment.id %}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">Edit?</a>
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
         <br>
