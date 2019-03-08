@@ -46,3 +46,7 @@ There's already a database included in the repo ( db.sqlite3 ). So, there's no n
 ```
 No third party apps used 😉
 ```
+
+##  Additional Features are also added :
+- Edit Delete and Update a Task
+- Edit Delete and Update a Comment
