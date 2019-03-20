@@ -156,44 +156,39 @@ def teams_list(request):
     print(json.dumps(data))
     return JsonResponse(data,safe=False)
 
+
 @login_required
 def taskreg(request):
     if request.method == "POST":
         form = TaskForm(request.POST)
-        try:
+        if form.is_valid():
             tasktitle = request.POST.get('title')
             desc = request.POST.get('description')
             teamid = request.POST.get('team')
-            asigne = request.POST.get('assignee')
-            # assignee = User.objects.get(id=asigne)
+            asignes = form.cleaned_data['assignee']
             state = request.POST.get('status')
             created_by = request.user
             created_at = timezone.now()
             last_modified = timezone.now()
-            
+
             # if team is empty then assignee has to be the request.user always
             if teamid=="":
-                assignee = request.user
-                Task.objects.create(title=tasktitle,description=desc,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
+                Task.objects.create(title=tasktitle,description=desc,created_by=created_by,status=state,created_at=created_at,last_modified=last_modified)
                 task = get_object_or_404(Task, title=tasktitle)
+                task.assignee.add(request.user)
                 return redirect('taskview', string=task.title)
             else:
                 team = Team.objects.get(id=teamid)
-
-            # assignee is empty only in case of a team
-            if asigne=="":
-                Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,status=state,created_at=created_at,last_modified=last_modified)
-                task = get_object_or_404(Task, title=tasktitle)
-                return redirect('taskview', string=task.title)
-            else:
-                assignee = User.objects.get(id=asigne)
-                Task.objects.create(title=tasktitle,description=desc,team=team,created_by=created_by,assignee=assignee,status=state,created_at=created_at,last_modified=last_modified)
-                task = get_object_or_404(Task, title=tasktitle)
-                return redirect('taskview', string=task.title)
-        except:
-            return HttpResponse('form invalid1')
+                # no assignee at present we'll add later
+                Task.objects.create(title=tasktitle,description=desc,created_by=created_by,team=team,status=state,created_at=created_at,last_modified=last_modified)
+            task = get_object_or_404(Task, title=tasktitle)
+            #So, we have a team assigned for task
+            for user in asignes:
+                task.assignee.add(user)
+            task.save()
+            return redirect('taskview', string=task.title)
         else:
-            return HttpResponse('form invalid2')
+            return HttpResponse('form invalid')
     else:
         form = TaskForm(request.user)
     return render(request, 'task.html', {'form': form})
@@ -211,14 +206,39 @@ def taskedit(request, string):
         return HttpResponse("You don't have permission to edit")
     if request.method == "POST":
         form = TaskEditForm(request.POST, instance=task)
+        # no assignee 
+        if(request.POST.get('assignee')==""):
+            task.assignee.clear()
+            tasktitle = request.POST.get('title')
+            taskdesc = request.POST.get('description')
+            task.title = tasktitle
+            task.description = taskdesc
+
+            state = request.POST.get('status')
+            task.status = state
+            task.last_modified = timezone.now()
+            task.save()
+            comm = Comments.objects.filter(task = taskprev)
+            # changing comments related to task when task is changed
+            for com in comm:
+                com.task = task
+                com.save()
+            return redirect('taskview', string=task.title)         
+        # assignee is there
         if form.is_valid():
             tasktitle = request.POST.get('title')
             taskdesc = request.POST.get('description')
             task.title = tasktitle
             task.description = taskdesc
-            asigne = request.POST.get('assignee')
-            if asigne!="":
-                task.assignee = User.objects.get(id=asigne)
+            #asigne = request.POST.get('assignee')
+            #                 
+            if(request.POST.get('assignee')==""):
+                task.assignee.clear()
+            else:
+                asignes = form.cleaned_data['assignee']
+                task.assignee.clear()
+                for user in asignes:
+                    task.assignee.add(user)
             state = request.POST.get('status')
             task.status = state
             task.last_modified = timezone.now()
@@ -229,11 +249,15 @@ def taskedit(request, string):
                 com.task = task
                 com.save()
             return redirect('taskview', string=task.title)
+        else:
+            return HttpResponse("form invalid")
     else:
         form = TaskEditForm(instance=task)
         team = get_object_or_404(Team, id=task.team.id)
         users = [val for val in team.users.all() if val in team.users.all()]
-    return render(request, 'taskedit.html', {'form': form, 'task': task, 'users': users})
+        assignes = task.assignee
+        a = [val for val in task.assignee.all() if val in task.assignee.all()]
+    return render(request, 'taskedit.html', {'form': form, 'task': task, 'users': users, 'a': a})
 
 
 """
@@ -244,6 +268,30 @@ def taskview(request, string):
     task = get_object_or_404(Task, title=string)
     if task is None:
         return HttpResponse("Task not found")
+    
+    if task.team is None:
+        # has permission to see
+        if request.user == task.created_by:
+            if request.method == "POST":
+                form = CommentForm(request.POST)
+                if form.is_valid():
+                    task = get_object_or_404(Task, title=string)
+                    comment = request.POST.get('comment')
+                    created_by = request.user
+                    created_at = timezone.now()
+                    Comments.objects.create(task=task,author=created_by,comment=comment,created_date=created_at)
+                    task = get_object_or_404(Task, title=string)
+                else:
+                    return HttpResponse('comment invalid')
+            c = Comments.objects.all().filter(task=task)
+            comments = [comment for comment in c]
+            form = CommentForm()
+            return render(request, 'taskview.html', {'form': form,'task': task,'comments': comments})
+        else:
+            # sorry no permission
+            return HttpResponse("You don't have permission to see the task")
+    # team exists so team mates can see the task
+
     team = get_object_or_404(Team, id=task.team.id)
     users = [val for val in team.users.all() if val in team.users.all()]
     if request.user in users:
@@ -261,8 +309,10 @@ def taskview(request, string):
                 return HttpResponse('comment invalid')
         c = Comments.objects.all().filter(task=task)
         comments = [comment for comment in c]
+        assignes = task.assignee
+        a = [val for val in task.assignee.all() if val in task.assignee.all()]
         form = CommentForm()
-        return render(request, 'taskview.html', {'form': form,'task': task,'comments': comments})
+        return render(request, 'taskview.html', {'form': form,'task': task,'comments': comments,'a':a})
     else:
         # sorry no permission
         return HttpResponse("You don't have permission to see the task")

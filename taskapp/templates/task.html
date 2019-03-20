@@ -63,7 +63,7 @@
       
       <div class="form-group">
         <label for="id_assignee">Task Assigne :</label>
-        <select class="form-control" name="assignee" id="id_assignee" aria-describedby="assignHelp">
+        <select class="form-control" name="assignee" id="id_assignee" aria-describedby="assignHelp" multiple>
           <option value="" selected="">---------</option>
         </select>
         <small id="assignHelp" class="form-text text-muted">Please select assignee, if you are not in any team you will be automatically assigned.</small>
@@ -133,7 +133,7 @@
          
                  var $id_assignee = $('#id_assignee');
                    $id_assignee.empty();
-                   $id_assignee.append('<option value="" selected="">---------</option>');
+                  //  $id_assignee.append('<option value="" selected="">---------</option>');
                    for (var key in t) {
                      if (t.hasOwnProperty(key)) {
                        $id_assignee.append('<option value=' + key + '>' + t[key] + '</option>');

@@ -35,14 +35,17 @@ class Task(models.Model):
     team = models.ForeignKey(Team,on_delete=models.PROTECT, null =True, blank = True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_creator', verbose_name=_('task_creator'),
                                    on_delete=models.PROTECT, null=False)
-    assignee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_assigne', verbose_name=_('task_assigne'),
-                                  on_delete=models.SET_NULL, null=True,blank=True)
+    # assignee = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_assigne', verbose_name=_('task_assigne'),
+    #                               on_delete=models.SET_NULL, null=True,blank=True)
+    assignee = models.ManyToManyField(User,related_name='task_assigne', verbose_name=_('task_assigne'), null=True,blank=True)
     status = models.CharField(_("status"), max_length=20, choices=STATUSES,default='to-do')
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
     
     def __str__(self):
         return self.title
+    def get_assignee(self):
+        return ",".join([str(a) for a in self.assignee.all()])
 
 class Comments(models.Model):
     class Meta:
